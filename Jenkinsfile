@@ -66,7 +66,13 @@ pipeline {
                     def helmChart = 'k8s-configuration/charts/microservice'
                     def valuesFile = "k8s-configuration/values/${params.SERVICE}"
                         sh """
-                        aws eks update-kubeconfig --name bensaada-home-assignment
+                        aws eks update-kubeconfig \
+                          --region eu-west-1 \
+                          --name bensaada-home-assignment \
+                          --kubeconfig kubeconfig
+
+                        export KUBECONFIG=$PWD/kubeconfig
+
                         helm upgrade --install ${params.SERVICE} ${helmChart} \
                             -f ${helmChart}/values.yaml \
                             -f ${valuesFile}.yaml \
