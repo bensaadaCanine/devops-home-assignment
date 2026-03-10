@@ -71,6 +71,7 @@ pipeline {
                             -f ${helmChart}/values.yaml \
                             -f ${valuesFile}.yaml \
                            -n microservices
+                        kubectl rollout status deployment/${params.SERVICE} -n microservices
                         """
                 }
             }

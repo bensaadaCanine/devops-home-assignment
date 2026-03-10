@@ -52,6 +52,8 @@ resource "aws_instance" "jenkins_agent" {
                 https://s3.us-west-2.amazonaws.com/amazon-eks/1.27.0/2023-07-05/bin/linux/amd64/kubectl
               chmod +x /usr/local/bin/kubectl
 
+              curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
               mkdir -p /home/ec2-user/jenkins
               cd /home/ec2-user/jenkins
 
