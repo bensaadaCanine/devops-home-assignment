@@ -43,7 +43,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:${BUILD_TAG} ./${SERVICE_DIR}
+                docker build -t ${IMAGE_NAME}:latest -t ${IMAGE_NAME}:build-${BUILD_NUMNER} ./${SERVICE_DIR}
                 """
                 }
             }
@@ -54,7 +54,7 @@ pipeline {
                 script {
                     sh """
                 docker push ${IMAGE_NAME}:latest
-                docker push ${IMAGE_NAME}:${BUILD_TAG}
+                docker push ${IMAGE_NAME}:build-${BUILD_NUMBER}
                 """
                 }
             }
@@ -64,8 +64,13 @@ pipeline {
             steps {
                 script {
                     def helmChart = 'k8s-configuration/charts/microservice'
+                    def valuesFile = "k8s-configuration/values/${params.SERVICE}"
                         sh """
-                            helm upgrade --install ${params.SERVICE} ${helmChart}"
+                        aws eks update-kubeconfig --name bensaada-home-assignment
+                        helm upgrade --install ${params.SERVICE} ${helmChart} \
+                            -f ${helmChart}/values.yaml \
+                            -f ${valuesFile}.yaml \
+                            -n microservices
                         """
                 }
             }
