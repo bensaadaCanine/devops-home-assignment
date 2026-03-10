@@ -70,14 +70,12 @@ pipeline {
                         helm upgrade --install ${params.SERVICE} ${helmChart} \
                             -f ${helmChart}/values.yaml \
                             -f ${valuesFile}.yaml \
-                            -n microservices
+                           -n microservices
                         """
                 }
             }
         }
     }
-}
-
     post {
         always {
             echo "Cleaning up local Docker image for ${params.SERVICE}..."
