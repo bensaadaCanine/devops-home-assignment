@@ -16,7 +16,7 @@ logger = logging.getLogger("queue-checker")
 
 AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
 SQS_QUEUE_URL = os.getenv("QUEUE_URL", "")
-S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME", "")
+S3_BUCKET_NAME = os.getenv("BUCKET_NAME", "")
 S3_PREFIX = os.getenv("S3_PREFIX", "emails/")
 POLL_INTERVAL_SEC = int(os.getenv("POLL_INTERVAL_SEC", "10"))
 MAX_MESSAGES = int(os.getenv("MAX_MESSAGES", "10"))
