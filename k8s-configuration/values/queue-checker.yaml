@@ -13,5 +13,3 @@ serviceAccount:
 env:
   - name: QUEUE_URL
     value: "https://sqs.eu-west-1.amazonaws.com/371670420772/emails-queue"
-  - name: QUEUE_URL
-    value: "emails-from-queue"
