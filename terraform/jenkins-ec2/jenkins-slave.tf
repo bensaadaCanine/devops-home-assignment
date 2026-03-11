@@ -25,6 +25,7 @@ resource "aws_security_group" "jenkins_agent_sg" {
 }
 
 resource "aws_instance" "jenkins_agent" {
+  for_each               = toset(local.jenkins_agents)
   ami                    = data.aws_ami.amazon_linux_2023.id
   instance_type          = "t3.micro"
   subnet_id              = local.jenkins_subnet
@@ -38,47 +39,13 @@ resource "aws_instance" "jenkins_agent" {
     delete_on_termination = true
   }
 
-  user_data = <<-EOF
-              #!/bin/bash
-              yum update -y
-              yum install -y java-21-amazon-corretto wget git awscli
-
-              yum install -y docker
-              systemctl enable docker
-              systemctl start docker
-              usermod -aG docker ec2-user
-
-              curl -Lo /usr/local/bin/kubectl \
-              "https://dl.k8s.io/release/v1.27.0/bin/linux/amd64/kubectl"
-              chmod +x /usr/local/bin/kubectl
-
-
-              curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-
-              mkdir -p /home/ec2-user/jenkins
-              cd /home/ec2-user/jenkins
-
-              mkdir -p /home/ec2-user/tmp
-              chmod 1777 /home/ec2-user/tmp
-              mount --bind /home/ec2-user/tmp /tmp
-              echo '/home/ec2-user/tmp /tmp none bind 0 0' | tee -a /etc/fstab
-
-              fallocate -l 2G /swapfile
-              chmod 600 /swapfile
-              mkswap /swapfile
-              swapon /swapfile
-              echo '/swapfile none swap sw 0 0' | tee -a /etc/fstab
-
-              JENKINS_MASTER_URL=${local.jenkins_master_url}
-              AGENT_SECRET=${data.aws_ssm_parameter.jenkins_agent_secret.value}
-
-              # Download Jenkins agent jar
-              wget $JENKINS_MASTER_URL/jnlpJars/agent.jar
-
-              java -jar agent.jar -url $JENKINS_MASTER_URL -secret $AGENT_SECRET -name "agent-1" -webSocket -workDir "/home/ec2-user/jenkins"
-              EOF
+  user_data = templatefile("${path.module}/templates/jenkins_agent_userdata.sh.tpl", {
+    jenkins_master_url     = local.jenkins_master_url
+    jenkins_admin_password = random_password.jenkins_admin_password.result
+    agent_name             = each.value
+  })
 
   tags = {
-    Name = "jenkins-agent"
+    Name = "jenkins-agent-${each.value}"
   }
 }

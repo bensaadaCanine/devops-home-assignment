@@ -58,18 +58,18 @@ strategy.setAllowAnonymousRead(false)
 instance.setAuthorizationStrategy(strategy)
 
 instance.setInstallState(InstallState.INITIAL_SETUP_COMPLETED)
-instance.setNumExecutors(1)
 
 instance.save()
 EOF
-
-chown -R jenkins:jenkins /var/lib/jenkins/init.groovy.d
 
 # -------------------------
 # Disable the setup wizard
 # -------------------------
 echo 'JENKINS_JAVA_OPTIONS="-Djenkins.install.runSetupWizard=false"' >>/etc/sysconfig/jenkins
+echo "2.0" >/var/lib/jenkins/jenkins.install.InstallUtil.lastExecVersion
+echo "2.0" >/var/lib/jenkins/jenkins.install.UpgradeWizard.state
 
+chown -R jenkins:jenkins /var/lib/jenkins
 # -------------------------
 # Jenkins start
 # -------------------------

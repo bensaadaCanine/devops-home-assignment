@@ -71,7 +71,7 @@ resource "aws_instance" "jenkins_master" {
   key_name               = "jenkins-server"
   iam_instance_profile   = aws_iam_instance_profile.jenkins_profile.name
 
-  user_data = file("userdata.sh")
+  user_data = file("master-userdata.sh")
 
   tags = {
     Name              = "jenkins-master"
