@@ -6,6 +6,11 @@ import logger
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
+logging.basicConfig(
+    level=logging.INFO,
+    stream=sys.stdout,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+)
 logger = logging.getLogger("uvicorn.error")
 
 app = FastAPI()
