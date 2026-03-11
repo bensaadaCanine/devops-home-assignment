@@ -25,7 +25,7 @@ resource "aws_security_group_rule" "jenkins_to_eks" {
   source_security_group_id = data.terraform_remote_state.jenkins.outputs.jenkins_agent_sg.id
 }
 
-resource "kubernetes_namespace" "microservices" {
+resource "kubernetes_namespace_v1" "microservices" {
   depends_on = [
     module.eks
   ]
@@ -35,54 +35,44 @@ resource "kubernetes_namespace" "microservices" {
   }
 }
 
-resource "kubernetes_cluster_role" "jenkins" {
+resource "kubernetes_role_v1" "jenkins" {
   depends_on = [
     module.eks,
     module.eks.access_entries # ensures access entry exists first
   ]
 
   metadata {
-    name = "jenkins-deployer"
+    name      = "jenkins"
+    namespace = "microservices"
   }
 
   rule {
-    api_groups = [""]
-    resources  = ["pods", "pods/log", "pods/exec", "services"]
-    verbs      = ["create", "get", "list", "watch", "delete", "update", "patch"]
-  }
-
-  rule {
-    api_groups = ["apps"]
-    resources  = ["deployments", "statefulsets", "replicasets"]
-    verbs      = ["create", "get", "list", "watch", "delete", "update", "patch"]
-  }
-
-  rule {
-    api_groups = ["batch"]
-    resources  = ["jobs", "cronjobs"]
-    verbs      = ["create", "get", "list", "watch", "delete", "update", "patch"]
+    api_groups = ["", "apps", "batch", "extensions"]
+    resources  = ["deployments", "services", "pods", "configmaps", "secrets", "jobs"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
   }
 }
 
-resource "kubernetes_cluster_role_binding" "jenkins_deployer" {
+resource "kubernetes_role_binding_v1" "jenkins" {
   depends_on = [
     module.eks,
     module.eks.access_entries # ensures access entry exists first
   ]
 
   metadata {
-    name = "jenkins-deployer-binding"
+    name      = "jenkins-binding"
+    namespace = "microservices"
   }
 
   role_ref {
     api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "cluster-admin"
+    kind      = "Role"
+    name      = "jenkins"
   }
 
   subject {
     kind      = "Group"
-    name      = "jenkins-deployer"
+    name      = "jenkins"
     api_group = "rbac.authorization.k8s.io"
   }
 }
