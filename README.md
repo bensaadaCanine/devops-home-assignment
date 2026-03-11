@@ -73,7 +73,7 @@ helm upgrade --install aws-load-balancer-controller \
   -n kube-system
 ```
 
-### 4 Build The Microservices Job In Jenkins (For Both MS)
+### 4. Build The Microservices Job In Jenkins (For Both MS)
 
 Execute the following command to get the DNS of Jenkins:
 
@@ -89,7 +89,7 @@ aws ssm get-parameter --name '/jenkins/admin-password' --with-decryption \
   --query "Parameter.Value" --output text
 ```
 
-### 4. Test API
+### 5. Test API
 
 ```sh
 EMAIL_CHECKER_DNS=$(kubectl get ingress email-checker -n microservices -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')

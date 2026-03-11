@@ -78,8 +78,7 @@ pipeline {
                             -f ${helmChart}/values.yaml \
                             -f ${valuesFile}.yaml \
                            -n microservices
-                        sleep 5
-                        kubectl rollout status deployment/${params.SERVICE} -n microservices
+                        kubectl rollout status deployment/${params.SERVICE} -n microservices --timeout=120s
                         """
                 }
             }
@@ -90,6 +89,7 @@ pipeline {
             echo "Cleaning up local Docker image for ${params.SERVICE}..."
             sh "docker rmi  ${IMAGE_NAME}:latest || true"
             sh "docker rmi  ${IMAGE_NAME}:build-${BUILD_ID} || true"
+            sh "rm -f $WORKSPACE/kubeconfig"
         }
         success {
             echo "Pipeline for ${params.SERVICE} completed successfully!"
