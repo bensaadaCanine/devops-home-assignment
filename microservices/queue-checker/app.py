@@ -50,9 +50,9 @@ def build_s3_key(message_id: str) -> str:
     now = datetime.now(timezone.utc)
     return (
         f"{S3_PREFIX}"
-        f"year={now.year:04d}/"
-        f"month={now.month:02d}/"
-        f"day={now.day:02d}/"
+        f"{now.year:04d}/"
+        f"{now.month:02d}/"
+        f"{now.day:02d}/"
         f"{message_id}.json"
     )
 
