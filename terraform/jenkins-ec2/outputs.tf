@@ -6,3 +6,7 @@ output "jenkins_agent_sg" {
   value = aws_security_group.jenkins_agent_sg
 }
 
+output "jenkins_url" {
+  value = aws_lb.jenkins_alb
+}
+

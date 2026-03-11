@@ -37,8 +37,7 @@ resource "kubernetes_namespace_v1" "microservices" {
 
 resource "kubernetes_role_v1" "jenkins" {
   depends_on = [
-    module.eks,
-    module.eks.access_entries # ensures access entry exists first
+    module.eks
   ]
 
   metadata {
@@ -55,8 +54,7 @@ resource "kubernetes_role_v1" "jenkins" {
 
 resource "kubernetes_role_binding_v1" "jenkins" {
   depends_on = [
-    module.eks,
-    module.eks.access_entries # ensures access entry exists first
+    module.eks
   ]
 
   metadata {
@@ -75,4 +73,13 @@ resource "kubernetes_role_binding_v1" "jenkins" {
     name      = "jenkins"
     api_group = "rbac.authorization.k8s.io"
   }
+}
+
+# Safer than implemeting with EKS module
+resource "aws_eks_access_entry" "jenkins" {
+  cluster_name      = module.eks.cluster_name
+  principal_arn     = data.terraform_remote_state.jenkins.outputs.jenkins_iam_role.arn
+  kubernetes_groups = ["jenkins"]
+
+  depends_on = [module.eks]
 }

@@ -14,8 +14,7 @@ provider "jenkins" {
 }
 
 resource "jenkins_job" "microservices_pipeline" {
-  depends_on = [aws_instance.jenkins_master]
-  name       = "microservices-pipeline"
+  name = "microservices-pipeline"
 
   template = templatefile("${path.module}/microservices-pipeline.xml", {
     repo_url = "https://github.com/bensaadaCanine/checkpoint-home-assignment.git"
