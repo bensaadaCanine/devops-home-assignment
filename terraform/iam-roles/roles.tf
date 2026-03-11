@@ -17,7 +17,8 @@ locals {
                 Effect = "Allow"
                 Action : [
                   "sqs:SendMessage",
-                  "sqs:GetQueueUrl"
+                  "sqs:GetQueueUrl",
+                  "sqs:GetQueueAttributes"
                 ],
                 Resource = data.terraform_remote_state.sqs.outputs.emails_queue.arn
               }

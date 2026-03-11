@@ -1,1 +1,6 @@
-boto3
+# AWS SDK
+boto3==1.37.23
+botocore==1.37.23
+
+# Prometheus metrics (standalone HTTP server)
+prometheus-client==0.21.1
