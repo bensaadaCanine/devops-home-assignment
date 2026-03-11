@@ -15,3 +15,8 @@ env:
     value: "https://sqs.eu-west-1.amazonaws.com/371670420772/emails-queue"
   - name: BUCKET_NAME
     value: emails-from-queue
+
+livenessProbe:
+  enabled: false
+readinessProbe:
+  enabled: false
