@@ -39,7 +39,7 @@ resource "aws_instance" "jenkins_agent" {
     delete_on_termination = true
   }
 
-  user_data = templatefile("${path.module}/templates/jenkins_agent_userdata.sh.tpl", {
+  user_data = templatefile("${path.module}/templates/jenkins_agent_userdata.sh", {
     jenkins_master_url     = local.jenkins_master_url
     jenkins_admin_password = random_password.jenkins_admin_password.result
     agent_name             = each.value
