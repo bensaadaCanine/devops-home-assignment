@@ -40,7 +40,7 @@ Worker that polls SQS and uploads messages to S3.
 ### 1. Deploy Infrastructure
 
 ```sh
-SERVICES=("remote-backend" "s3-buckets" "ssm" "sqs" "ecr" "vpc" "jenkins-ec2" "eks" "iam-roles")
+SERVICES=("remote-backend" "s3-buckets" "ssm" "sqs" "ecr" "vpc" "jenkins-ec2" "eks" "iam-roles" "microservices-pipeline-job")
 cd terraform
 for folder in $SERVICES; do
   cd $folder
