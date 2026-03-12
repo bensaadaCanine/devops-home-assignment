@@ -46,8 +46,26 @@ resource "kubernetes_role_v1" "jenkins" {
   }
 
   rule {
-    api_groups = ["", "apps", "batch", "extensions"]
-    resources  = ["deployments", "services", "pods", "configmaps", "secrets", "jobs"]
+    api_groups = [""]
+    resources  = ["serviceaccounts", "services", "configmaps", "pods", "secrets"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
+  }
+
+  rule {
+    api_groups = ["apps"]
+    resources  = ["deployments", "replicasets"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
+  }
+
+  rule {
+    api_groups = ["networking.k8s.io"]
+    resources  = ["ingresses"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
+  }
+
+  rule {
+    api_groups = ["autoscaling"]
+    resources  = ["horizontalpodautoscalers"]
     verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
   }
 }
