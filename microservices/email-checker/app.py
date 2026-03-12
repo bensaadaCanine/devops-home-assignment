@@ -65,7 +65,6 @@ def validate_payload(payload: dict) -> tuple[bool, str]:
       1. 'token' field presence and correctness.
       2. 'data' field presence and all four required text sub-fields.
     """
-
     if "token" not in payload:
         return False, "Missing 'token' field"
 
@@ -75,6 +74,7 @@ def validate_payload(payload: dict) -> tuple[bool, str]:
         return False, "Token validation service unavailable"
 
     if payload["token"] != expected:
+        TOKEN_VALIDATION_FAILURES.inc()
         return False, "Invalid token"
 
     if "data" not in payload:
@@ -152,28 +152,32 @@ def send_message():
     """
     payload = request.get_json(silent=True)
     if payload is None:
+        REQUEST_COUNT.labels(status="client_error").inc()
         logger.warning("Received non-JSON request body")
         return jsonify({"error": "Request body must be valid JSON"}), 400
 
     is_valid, error_msg = validate_payload(payload)
     if not is_valid:
+        REQUEST_COUNT.labels(status="validation_error").inc()
         logger.warning("Validation failed: %s", error_msg)
         return jsonify({"error": error_msg}), 422
 
-    # Strip token before publishing to SQS
     message_body = {
         "data": payload["data"],
         "received_at": datetime.utcnow().isoformat() + "Z",
     }
 
     try:
-        response = sqs_client.send_message(
-            QueueUrl=SQS_QUEUE_URL,
-            MessageBody=json.dumps(message_body),
-        )
+        with SQS_PUBLISH_LATENCY.time():
+            response = sqs_client.send_message(
+                QueueUrl=SQS_QUEUE_URL,
+                MessageBody=json.dumps(message_body),
+            )
         message_id = response["MessageId"]
+        REQUEST_COUNT.labels(status="success").inc()
         logger.info("Message published to SQS. MessageId=%s", message_id)
         return jsonify({"status": "published", "message_id": message_id}), 200
     except ClientError as exc:
+        REQUEST_COUNT.labels(status="server_error").inc()
         logger.error("Failed to send message to SQS: %s", exc)
         return jsonify({"error": "Failed to publish message"}), 500
