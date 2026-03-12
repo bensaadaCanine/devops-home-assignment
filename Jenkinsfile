@@ -79,7 +79,7 @@ pipeline {
                             -f ${helmChart}/values.yaml \
                             -f ${valuesFile}.yaml \
                            -n microservices
-                        kubectl rollout status deployment/${params.SERVICE} -n microservices --timeout=120s
+                        kubectl rollout status deployment/${params.SERVICE} -n microservices --timeout=300s
                         """
                 }
             }
