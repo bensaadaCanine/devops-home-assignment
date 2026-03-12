@@ -26,7 +26,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    sh 'pip3 install pytest boto3 flask'
+                    sh "pip3 install -r ${SERVICE_DIR}/requirements.txt"
                     sh "pytest ${SERVICE_DIR} -v || echo 'No tests found for ${params.SERVICE}'"
                 }
             }
