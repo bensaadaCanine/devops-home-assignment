@@ -125,3 +125,11 @@ kubectl get ingress kube-prometheus-stack-grafana \
   -n monitoring \
   -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
 ```
+
+Get Prometheus DNS from here:
+
+```sh
+kubectl get ingress kube-prometheus-stack-prometheus \
+  -n monitoring \
+  -o jsonpath='{.status.loadBalancer.ingress[0].hostname}'
+```
