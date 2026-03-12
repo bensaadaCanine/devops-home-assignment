@@ -10,9 +10,6 @@ ingress:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80}]'
     alb.ingress.kubernetes.io/healthcheck-path: /health
 
-  path: /
-  pathType: Prefix
-
 serviceAccount:
   create: true
   annotations:
