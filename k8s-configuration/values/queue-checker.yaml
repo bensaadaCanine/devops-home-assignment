@@ -5,6 +5,22 @@ replicaCount: 1
 ingress:
   enabled: false
 
+service:
+  type: ClusterIP
+  ports:
+    - name: app
+      port: 80
+      targetPort: 8080
+    - name: metrics
+      port: 9090
+      targetPort: 9090
+
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  interval: 15s
+  port: metrics
+
 serviceAccount:
   create: true
   annotations:

@@ -30,8 +30,15 @@ resources:
 
 service:
   type: ClusterIP
-  port: 80
-  targetPort: 8080
+  ports:
+    - name: app
+      port: 80
+      targetPort: 8080
+
+serviceMonitor:
+  enabled: true
+  namespace: monitoring
+  interval: 15s
 
 ingress:
   enabled: false
