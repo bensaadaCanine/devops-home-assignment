@@ -19,7 +19,7 @@ serviceMonitor:
   enabled: true
   namespace: monitoring
   interval: 15s
-  port: metrics
+  portName: metrics
 
 serviceAccount:
   create: true

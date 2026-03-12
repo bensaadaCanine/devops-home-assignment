@@ -39,6 +39,7 @@ serviceMonitor:
   enabled: true
   namespace: monitoring
   interval: 15s
+  portName: app
 
 ingress:
   enabled: false
