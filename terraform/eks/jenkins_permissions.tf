@@ -64,6 +64,12 @@ resource "kubernetes_role_v1" "jenkins" {
   }
 
   rule {
+    api_groups = ["monitoring.coreos.com"]
+    resources  = ["servicemonitors"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
+  }
+
+  rule {
     api_groups = ["autoscaling"]
     resources  = ["horizontalpodautoscalers"]
     verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
