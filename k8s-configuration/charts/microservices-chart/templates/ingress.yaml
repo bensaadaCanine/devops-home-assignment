@@ -22,5 +22,5 @@ spec:
               service:
                 name: {{ .Values.name }}
                 port:
-                  number: {{ .Values.service.port }}
+                  name: {{ .Values.ingress.portName | default "app" }}
 {{- end }}
