@@ -1,0 +1,168 @@
+{
+  "title": "DevOps Home Assignment – Microservices Dashboard",
+  "uid": "devops-home-asgnmt-ms",
+  "schemaVersion": 38,
+  "version": 1,
+  "refresh": "15s",
+  "time": { "from": "now-1h", "to": "now" },
+  "templating": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Email Checker – Request Rate (req/s)",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(email_checker_requests_total[1m])) by (status)",
+          "legendFormat": "{{status}}"
+        }
+      ]
+    },
+
+    {
+      "id": 2,
+      "title": "Email Checker – SQS Publish Latency (p50/p95/p99)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, rate(email_checker_sqs_publish_duration_seconds_bucket[5m]))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, rate(email_checker_sqs_publish_duration_seconds_bucket[5m]))",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, rate(email_checker_sqs_publish_duration_seconds_bucket[5m]))",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+
+    {
+      "id": 3,
+      "title": "Email Checker – Token Validation Failures / min",
+      "type": "stat",
+      "gridPos": { "x": 0, "y": 8, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "rate(email_checker_token_validation_failures_total[1m]) * 60",
+          "legendFormat": "failures/min"
+        }
+      ],
+      "options": {
+        "colorMode": "background",
+        "reduceOptions": { "calcs": ["lastNotNull"] }
+      },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 20 }
+            ]
+          }
+        }
+      }
+    },
+
+    {
+      "id": 4,
+      "title": "Email Checker – Total Requests",
+      "type": "stat",
+      "gridPos": { "x": 6, "y": 8, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "sum(email_checker_requests_total)",
+          "legendFormat": "total"
+        }
+      ]
+    },
+
+    {
+      "id": 5,
+      "title": "Queue Checker – Messages Processed / min",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 12, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "rate(queue_checker_messages_processed_total[1m]) * 60",
+          "legendFormat": "processed/min"
+        }
+      ]
+    },
+
+    {
+      "id": 6,
+      "title": "Queue Checker – S3 Upload Latency (p50/p95)",
+      "type": "timeseries",
+      "gridPos": { "x": 12, "y": 12, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, rate(queue_checker_s3_upload_duration_seconds_bucket[5m]))",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.95, rate(queue_checker_s3_upload_duration_seconds_bucket[5m]))",
+          "legendFormat": "p95"
+        }
+      ]
+    },
+
+    {
+      "id": 7,
+      "title": "Queue Checker – Failed Messages by Reason",
+      "type": "timeseries",
+      "gridPos": { "x": 0, "y": 20, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(queue_checker_messages_failed_total[1m])) by (reason)",
+          "legendFormat": "{{reason}}"
+        }
+      ]
+    },
+
+    {
+      "id": 8,
+      "title": "Queue Checker – Time Since Last SQS Poll (seconds)",
+      "type": "stat",
+      "gridPos": { "x": 12, "y": 20, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "time() - queue_checker_last_poll_timestamp_seconds",
+          "legendFormat": "seconds ago"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 30 },
+              { "color": "red", "value": 120 }
+            ]
+          }
+        }
+      }
+    },
+
+    {
+      "id": 9,
+      "title": "Queue Checker – Total Messages Uploaded to S3",
+      "type": "stat",
+      "gridPos": { "x": 18, "y": 20, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "expr": "queue_checker_messages_processed_total",
+          "legendFormat": "total"
+        }
+      ]
+    }
+  ]
+}

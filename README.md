@@ -67,7 +67,6 @@ aws eks update-kubeconfig --region eu-west-1 \
 ### 3. Deploy ALB Controller In Kubernetes (HELM)
 
 ```sh
-helm dependency build ./k8s-configuration/charts/aws-load-balancer-controller
 helm upgrade --install aws-load-balancer-controller \
   ./k8s-configuration/charts/aws-load-balancer-controller \
   -f ./k8s-configuration/charts/aws-load-balancer-controller/values.yaml \
@@ -105,4 +104,16 @@ TOKEN=$(aws ssm get-parameter --name '/email-checker/validation-token' --with-de
 curl -X POST "http://${EMAIL_CHECKER_DNS}/send" \
   -H "Content-Type: application/json" \
   -d '{"data":{"email_subject":"Happy new year!","email_sender":"John doe","email_timestream":"1693561101","email_content":"Just want to say... Happy new year!!!"},"token":"'"${TOKEN}"'"}'
+```
+
+### 6. BONUS: Deploy kube Prometheus Stack In Kubernetes (HELM)
+
+```sh
+GRAFANA_ADMIN_PASSWORD=$(aws ssm get-parameter --name '/grafana/admin-password' --with-decryption --query "Parameter.Value" --output text)
+helm dependency build ./k8s-configuration/charts/kube-prom-stack
+helm upgrade --install kube-prometheus-stack ./k8s-configuration/charts/kube-prom-stack \
+  --namespace monitoring --create-namespace \
+  -f ./k8s-configuration/charts/kube-prom-stack/values.yaml \
+  -f ./k8s-configuration/values/kube-prom-stack.yaml \
+  --set grafana.adminPassword=$GRAFANA_ADMIN_PASSWORD
 ```

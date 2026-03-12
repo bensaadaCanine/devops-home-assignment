@@ -1,0 +1,12 @@
+{{- range $path, $bytes := .Files.Glob "dashboards/*" }}
+{{- $name := printf "%s-grafana-dashboard" ((split "." (base $path))._0 | replace "+" "_" | trunc 63 | trimSuffix "-") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $name }}
+  labels:
+    grafana_dashboard: "1"
+data:
+{{ ($.Files.Glob $path).AsConfig | indent 2 }}
+---
+{{- end }}

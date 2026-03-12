@@ -1,0 +1,62 @@
+# kube-prometheus-stack-values.yaml
+#
+# Install with:
+#   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+#   helm repo update
+#   helm upgrade --install kube-prometheus-stack prometheus-community/kube-prometheus-stack \
+#     --namespace monitoring --create-namespace \
+#     --values kube-prometheus-stack-values.yaml
+
+grafana:
+  enabled: true
+  adminPassword:
+
+prometheus:
+  prometheusSpec:
+    # Pick up ServiceMonitors from ALL namespaces (not just kube-prometheus-stack's own)
+    serviceMonitorSelectorNilUsesHelmValues: false
+    serviceMonitorNamespaceSelector: {}
+    serviceMonitorSelector: {}
+
+    retention: 7d
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+
+alertmanager:
+  enabled: true
+  alertmanagerSpec:
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+
+# Disable components you don't need to keep the footprint small
+kubeStateMetrics:
+  enabled: true
+
+nodeExporter:
+  enabled: true
+
+# Additional scrape config for queue-checker (port 9090, no ServiceMonitor CRD needed)
+# If you add ServiceMonitor resources in your own charts this block is not needed.
+prometheus:
+  prometheusSpec:
+    additionalScrapeConfigs:
+      - job_name: queue-checker-metrics
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            regex: queue-checker-metrics
+            action: keep
+          - source_labels: [__meta_kubernetes_pod_ip]
+            target_label: __address__
+            replacement: "$1:9090"
+          - target_label: __metrics_path__
+            replacement: /metrics
+
