@@ -64,12 +64,6 @@ resource "kubernetes_role_v1" "jenkins" {
   }
 
   rule {
-    api_groups = ["monitoring.coreos.com"]
-    resources  = ["servicemonitors"]
-    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
-  }
-
-  rule {
     api_groups = ["autoscaling"]
     resources  = ["horizontalpodautoscalers"]
     verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
@@ -90,6 +84,38 @@ resource "kubernetes_role_binding_v1" "jenkins" {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Role"
     name      = "jenkins"
+  }
+
+  subject {
+    kind      = "Group"
+    name      = "jenkins"
+    api_group = "rbac.authorization.k8s.io"
+  }
+}
+
+resource "kubernetes_role_v1" "jenkins_monitoring" {
+  metadata {
+    name      = "jenkins-monitoring-role"
+    namespace = "monitoring"
+  }
+
+  rule {
+    api_groups = ["monitoring.coreos.com"]
+    resources  = ["servicemonitors"]
+    verbs      = ["get", "list", "watch", "create", "update", "patch", "delete"]
+  }
+}
+
+resource "kubernetes_role_binding_v1" "jenkins_monitoring" {
+  metadata {
+    name      = "jenkins-monitoring-rolebinding"
+    namespace = "monitoring"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = kubernetes_role_v1.jenkins_monitoring.metadata[0].name
   }
 
   subject {
