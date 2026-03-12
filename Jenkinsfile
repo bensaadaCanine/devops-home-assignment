@@ -29,7 +29,7 @@ pipeline {
                     sh """
                     if find ${SERVICE_DIR} -name "*test*" | grep -q .; then
                         pip3 install -r ${SERVICE_DIR}/requirements.txt
-                        pytest ${SERVICE_DIR} --collect-only
+                        pytest ${SERVICE_DIR} -v
                     else
                         echo "No tests found for ${params.SERVICE}, skipping..."
                     fi

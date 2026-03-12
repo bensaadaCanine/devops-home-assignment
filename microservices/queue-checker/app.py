@@ -140,6 +140,7 @@ def run_poll_loop() -> None:
         time.sleep(POLL_INTERVAL_SEC)
 
 
-start_http_server(METRICS_PORT)
-logger.info("Prometheus metrics on :%d/metrics", METRICS_PORT)
-run_poll_loop()
+if __name__ == "__main__":
+    start_http_server(METRICS_PORT)
+    logger.info("Prometheus metrics on :%d/metrics", METRICS_PORT)
+    run_poll_loop()
