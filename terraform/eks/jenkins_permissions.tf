@@ -35,13 +35,13 @@ resource "kubernetes_namespace_v1" "microservices" {
   }
 }
 
-resource "kubernetes_role_v1" "jenkins" {
+resource "kubernetes_role_v1" "jenkins_ms_deploy" {
   depends_on = [
     module.eks
   ]
 
   metadata {
-    name      = "jenkins"
+    name      = "jenkins-ms-deploy"
     namespace = "microservices"
   }
 
@@ -70,20 +70,20 @@ resource "kubernetes_role_v1" "jenkins" {
   }
 }
 
-resource "kubernetes_role_binding_v1" "jenkins" {
+resource "kubernetes_role_binding_v1" "jenkins_ms_deploy" {
   depends_on = [
     module.eks
   ]
 
   metadata {
-    name      = "jenkins-binding"
+    name      = "jenkins-ms-deploy-binding"
     namespace = "microservices"
   }
 
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "Role"
-    name      = "jenkins"
+    name      = kubernetes_role_v1.jenkins_ms_deploy.metadata[0].name
   }
 
   subject {
@@ -95,7 +95,7 @@ resource "kubernetes_role_binding_v1" "jenkins" {
 
 resource "kubernetes_role_v1" "jenkins_monitoring" {
   metadata {
-    name      = "jenkins-monitoring-role"
+    name      = "jenkins-monitoring"
     namespace = "monitoring"
   }
 
