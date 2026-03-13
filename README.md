@@ -39,7 +39,7 @@ Worker that polls SQS and uploads messages to S3.
 
 ### 1. Deploy Infrastructure
 
-Please change the CIDR block of the Jenkins ALB SG ingress before executing this code block. You can find it in `terraform/jenkins-ec2/alb.tf`. It mapped to my personal IP due to security reasons (Jenkins should NOT be accessible by anyone).
+Please change the CIDR block of the Jenkins ALB SG ingress before executing this code block. You can find it in `terraform/jenkins-ec2/alb.tf`. It mapped to my personal IP due to security reasons (Jenkins should be accessible to RnD teams only).
 
 ```sh
 SERVICES=("remote-backend" "s3-buckets" "ssm" "sqs" "ecr" "vpc" "jenkins-ec2" "eks" "iam-roles" "jenkins-jobs")
