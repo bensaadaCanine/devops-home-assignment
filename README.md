@@ -1,4 +1,4 @@
-# DevOps Home Assignment – EKS Microservices System
+# EKS Microservices System
 
 ## Architecture
 
